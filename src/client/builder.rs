@@ -16,6 +16,7 @@ use crate::GithubClient;
 /// // If `enterprise` is not enabled
 /// let client = GithubClientBuilder::new().auth("ghp_kajshdkja").build().unwrap();
 /// ```
+#[cfg_attr(docsrs, doc(cfg(feature = "auth")))]
 pub struct GithubClientBuilder<'a> {
     #[cfg(feature = "enterprise")]
     base_url: Option<&'a str>,
@@ -25,7 +26,6 @@ pub struct GithubClientBuilder<'a> {
 
 impl<'a> GithubClientBuilder<'a> {
     /// Creates a new `GithubClientBuilder`.
-
     pub fn new() -> Self {
         Self {
             #[cfg(feature = "auth")]
@@ -55,7 +55,7 @@ impl<'a> GithubClientBuilder<'a> {
         };
     }
 
-    #[cfg(feature = "auth")]
+    #[cfg(any(feature = "auth", doc))]
     /// Sets the auth token.
     /// # Examples
     /// ```rust
@@ -69,7 +69,7 @@ impl<'a> GithubClientBuilder<'a> {
         self
     }
 
-    #[cfg(feature = "enterprise")]
+    #[cfg(any(feature = "enterprise", doc))]
     /// Sets the base url.
     /// # Examples
     /// ```rust

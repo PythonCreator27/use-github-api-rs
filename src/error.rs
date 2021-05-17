@@ -1,4 +1,4 @@
-#[cfg(any(feature = "auth", feature = "enterprise"))]
+#[cfg(any(feature = "auth"))]
 pub mod creation {
     use std::{error::Error as StdError, fmt};
 

@@ -1,4 +1,5 @@
 #![warn(rust_2018_idioms)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 pub mod client;
 mod error;
 pub mod schema;

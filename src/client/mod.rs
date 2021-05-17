@@ -50,7 +50,7 @@ impl<'a> GithubClient<'a> {
     /// The base url can be like this: `https://somehostfor.github.enterprise.org/api/v3`.
     /// Do make sure to add the `https://` and the `/api/v3`.
     /// ## Auth Token
-    /// If using a PAT (personal access token), you can obtain one from https://github.com/settings/tokens.
+    /// If using a PAT (personal access token), you can obtain one from <https://github.com/settings/tokens>.
     /// # Errors
     /// Will error if the protocol is not `http://` or `https://`, and will also error if the base URL does not include `/api/v3`.
     /// Will also error if the reqwest client fails to build.

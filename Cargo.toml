@@ -25,3 +25,7 @@ default = ["auth"]
 node_ids = []
 auth = []
 enterprise = ["auth"] # Auth is required for enterprise GH
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
