@@ -122,18 +122,20 @@ impl<'a> Users<'a> {
 #[cfg(test)]
 mod tests {
     #[cfg(feature = "auth")]
-    use crate::constants::{BAD_FAKE_TOKEN, FAKE_TOKEN};
+    use crate::constants::FAKE_TOKEN;
 
     use super::*;
 
     #[tokio::test]
-    #[cfg(not(feature = "enterprise"))]
     async fn list_works() {
-        #[cfg(feature = "auth")]
-        let client = GithubClient::new(FAKE_TOKEN).unwrap();
+        let client = GithubClient::new(
+            #[cfg(feature = "enterprise")]
+            "https://something.com/api/v3",
+            #[cfg(feature = "auth")]
+            FAKE_TOKEN,
+        )
+        .unwrap();
 
-        #[cfg(not(feature = "auth"))]
-        let client = GithubClient::new().unwrap();
         let users = Users::new(&client);
         let data = users.list(None).await.unwrap();
         assert_eq!(data[0].login, "mojombo");
@@ -141,28 +143,14 @@ mod tests {
     }
 
     #[tokio::test]
-    #[cfg(feature = "auth")]
-    #[should_panic(expected = "RuntimeError { kind: BadCredentials }")]
-    async fn list_auth_returns_auth_err() {
+    async fn single_works() {
         let client = GithubClient::new(
             #[cfg(feature = "enterprise")]
             "https://something.com/api/v3",
-            BAD_FAKE_TOKEN,
+            #[cfg(feature = "auth")]
+            FAKE_TOKEN,
         )
         .unwrap();
-
-        let users = Users::new(&client);
-        users.list(None).await.unwrap();
-    }
-
-    #[tokio::test]
-    #[cfg(not(feature = "enterprise"))]
-    async fn single_works() {
-        #[cfg(feature = "auth")]
-        let client = GithubClient::new(FAKE_TOKEN).unwrap();
-
-        #[cfg(not(feature = "auth"))]
-        let client = GithubClient::new().unwrap();
         let users = Users::new(&client);
         let data = users.user("mojombo").await.unwrap();
         assert_eq!(data.login, "mojombo");
