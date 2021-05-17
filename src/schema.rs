@@ -92,6 +92,35 @@ pub mod users {
             private_repos: usize,
         }
     }
+
+    pub mod contextual_info {
+        #[derive(Debug, serde::Deserialize)]
+        pub struct User {
+            pub contexts: Vec<Context>,
+        }
+
+        #[derive(Debug, serde::Deserialize)]
+        pub struct Context {
+            pub message: String,
+            pub octicon: String,
+        }
+
+        #[derive(Debug, serde::Serialize)]
+        #[non_exhaustive]
+        pub struct Params {
+            subject_type: String,
+            subject_id: usize,
+        }
+
+        impl Params {
+            pub fn new(subject_type: String, subject_id: usize) -> Self {
+                Self {
+                    subject_id,
+                    subject_type,
+                }
+            }
+        }
+    }
 }
 
 #[derive(serde::Deserialize, Debug)]

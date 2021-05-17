@@ -1,6 +1,6 @@
 #[cfg(not(test))]
 use crate::url;
-use crate::{check_for_errors, GithubClient};
+use crate::{check_for_errors, schema::users::contextual_info, GithubClient};
 use serde_json::from_str;
 use std::error::Error;
 
@@ -79,6 +79,44 @@ impl<'a> Users<'a> {
             }
         }
     }
+
+    #[cfg(any(feature = "auth", doc))]
+    #[cfg_attr(docsrs, doc(cfg(feature = "auth")))]
+    /// Fetches contextual info (like the hovercard you see on github). Requires auth.
+    /// It can either work with the username alone (and then it will fetch profile data), or it can work with a subject type (like "repository") and id (the repository's id on the API).
+    /// # Errors
+    /// Will error if the user doesn't exist.
+    pub async fn contextual_info(
+        &self,
+        username: &str,
+        cfg: Option<contextual_info::Params>,
+    ) -> Result<contextual_info::User, Box<dyn Error>> {
+        #[cfg(test)]
+        let text = crate::mock_response!(&self, "users", "contextual_info", (username, cfg));
+        #[cfg(not(test))]
+        let text = {
+            let result = self
+                .client
+                .reqwest_client
+                .get(url!(self, "/users/{}/hovercard", username))
+                .query(&cfg)
+                .send()
+                .await?;
+            result.text().await?
+        };
+
+        match from_str::<contextual_info::User>(&text) {
+            Ok(data) => Ok(data),
+            Err(err) => {
+                if err.is_data() {
+                    let error_data = from_str::<GitHubError>(&text)?;
+                    check_for_errors!(error_data, err);
+                } else {
+                    Err(err.into())
+                }
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -128,5 +166,20 @@ mod tests {
         let users = Users::new(&client);
         let data = users.user("mojombo").await.unwrap();
         assert_eq!(data.login, "mojombo");
+    }
+
+    #[tokio::test]
+    #[cfg(feature = "auth")]
+    async fn context_info_works() {
+        #[cfg(feature = "auth")]
+        let client = GithubClient::new(
+            #[cfg(feature = "enterprise")]
+            "https://something.com/api/v3",
+            FAKE_TOKEN,
+        )
+        .unwrap();
+        let users = Users::new(&client);
+        let data = users.contextual_info("mojombo", None).await.unwrap();
+        assert_eq!(data.contexts[0].message, "Member of @toml-lang");
     }
 }
