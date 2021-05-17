@@ -75,6 +75,7 @@ impl<'a> GithubClientBuilder<'a> {
     /// ```rust
     /// # use use_github_api::GithubClientBuilder;
     /// let builder = GithubClientBuilder::new();
+    /// # #[cfg(feature = "enterprise")]
     /// let builder = builder.base_url("https://something.com/api/v3");
     /// // Build client and do stuff
     /// ```
