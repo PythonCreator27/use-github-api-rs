@@ -1,5 +1,8 @@
 # use-github-api-rs
 
+![CI Status](https://img.shields.io/github/workflow/status/PythonCreator27/use-github-api-rs/CI?label=CI)
+![Issues open](https://img.shields.io/github/issues/PythonCreator27/use-github-api-rs)
+
 A GitHub API client for rust.
 
 ## WARNING!
