@@ -3,7 +3,7 @@ jobs:
     ci:
         strategy:
             matrix:
-                toolchain: [stable, beta, nightly]
+                toolchain: [stable, nightly]
                 args:
                     [
                         --no-default-features,
@@ -12,7 +12,7 @@ jobs:
                     ]
             fail-fast: false
         runs-on: ubuntu-latest
-        name: Run CI on ${{ matrix.toolchain }}
+        name: Run CI on ${{ matrix.toolchain }} with args ${{ matrix.args }}
         steps:
             - uses: actions/checkout@v2
             - name: Setup toolchain
