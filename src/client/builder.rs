@@ -59,10 +59,13 @@ impl<'a> GithubClientBuilder<'a> {
     /// Sets the auth token.
     /// # Examples
     /// ```rust
+    /// # #[cfg(feature = "auth")]
+    /// # {
     /// # use use_github_api::GithubClientBuilder;
     /// let builder = GithubClientBuilder::new();
     /// let builder = builder.auth("my auth token");
     /// // Build client and do stuff
+    /// # }
     /// ```
     pub fn auth(mut self, auth_token: &'a str) -> Self {
         self.auth_token = Some(auth_token);
@@ -73,11 +76,13 @@ impl<'a> GithubClientBuilder<'a> {
     /// Sets the base url.
     /// # Examples
     /// ```rust
+    /// # #[cfg(feature = "enterprise")]
+    /// # {
     /// # use use_github_api::GithubClientBuilder;
     /// let builder = GithubClientBuilder::new();
-    /// # #[cfg(feature = "enterprise")]
     /// let builder = builder.base_url("https://something.com/api/v3");
     /// // Build client and do stuff
+    /// # }
     /// ```
     pub fn base_url(mut self, base_url: &'a str) -> Self {
         self.base_url = Some(base_url);
