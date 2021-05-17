@@ -4,6 +4,10 @@ version = "0.1.0"
 authors = ["advaiyalad <advaiya.lad@gmail.com>"]
 edition = "2018"
 exclude = ["/.github", "/.prettierrc"]
+repository = "https://github.com/PythonCreator27/use-github-api-rs"
+license = "MIT"
+keywords = ["github", "api"]
+description = "A Github API client for rust."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
