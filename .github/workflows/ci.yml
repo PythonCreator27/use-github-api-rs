@@ -1,4 +1,7 @@
 on: [push, pull_request]
+
+name: CI
+
 jobs:
     ci:
         strategy:
