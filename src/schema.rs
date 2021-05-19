@@ -1,6 +1,6 @@
 pub mod users {
     pub mod list {
-        use core::panic;
+        use std::error::Error;
 
         #[derive(serde::Deserialize, serde::Serialize, Debug)]
         #[allow(dead_code)]
@@ -25,20 +25,26 @@ pub mod users {
         }
 
         #[derive(serde::Serialize, Debug)]
+        #[non_exhaustive]
         pub struct Params {
             pub since: Option<usize>,
             pub per_page: Option<usize>,
         }
 
         impl Params {
-            pub fn new(since: Option<usize>, per_page: Option<usize>) -> Self {
+            pub fn new(
+                since: Option<usize>,
+                per_page: Option<usize>,
+            ) -> Result<Self, Box<dyn Error>> {
                 if let Some(per_page) = per_page {
                     if per_page > 100 {
-                        panic!()
+                        return Err(
+                            crate::users::error::UsersError::per_page_bigger_than_100().into()
+                        );
                     }
                 }
 
-                Self { since, per_page }
+                Ok(Self { since, per_page })
             }
         }
     }

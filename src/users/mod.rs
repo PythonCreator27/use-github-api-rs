@@ -4,6 +4,8 @@ use crate::{check_for_errors, schema::users::contextual_info, GithubClient};
 use serde_json::from_str;
 use std::error::Error;
 
+pub mod error;
+
 #[non_exhaustive]
 pub struct Users<'a> {
     #[cfg_attr(test, allow(dead_code))]
