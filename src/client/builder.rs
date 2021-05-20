@@ -38,7 +38,7 @@ impl<'a> GithubClientBuilder<'a> {
     /// Builds the builder and returns a client.
     /// # Errors
     /// If either the auth token or the base url is missing, this will error out.
-    pub fn build(self) -> Result<GithubClient<'a>, Box<dyn StdError>> {
+    pub fn build(&self) -> Result<GithubClient<'a>, Box<dyn StdError>> {
         #[cfg(all(feature = "auth", feature = "enterprise"))]
         return match self.auth_token {
             None => Err(CreationError::auth_token_not_provided().into()),
@@ -62,12 +62,12 @@ impl<'a> GithubClientBuilder<'a> {
     /// # #[cfg(feature = "auth")]
     /// # {
     /// # use use_github_api::GithubClientBuilder;
-    /// let builder = GithubClientBuilder::new();
+    /// let mut builder = GithubClientBuilder::new();
     /// let builder = builder.auth("my auth token");
     /// // Build client and do stuff
     /// # }
     /// ```
-    pub fn auth(mut self, auth_token: &'a str) -> Self {
+    pub fn auth(&mut self, auth_token: &'a str) -> &mut Self {
         self.auth_token = Some(auth_token);
         self
     }
@@ -79,12 +79,12 @@ impl<'a> GithubClientBuilder<'a> {
     /// # #[cfg(feature = "enterprise")]
     /// # {
     /// # use use_github_api::GithubClientBuilder;
-    /// let builder = GithubClientBuilder::new();
+    /// let mut builder = GithubClientBuilder::new();
     /// let builder = builder.base_url("https://something.com/api/v3");
     /// // Build client and do stuff
     /// # }
     /// ```
-    pub fn base_url(mut self, base_url: &'a str) -> Self {
+    pub fn base_url(&mut self, base_url: &'a str) -> &mut Self {
         self.base_url = Some(base_url);
         self
     }
@@ -111,17 +111,21 @@ mod tests {
 
     #[test]
     fn sets_auth() {
-        let builder = GithubClientBuilder::new();
         let token = "Some token";
-        assert_eq!(builder.auth(token).auth_token, Some(token));
+        assert_eq!(
+            GithubClientBuilder::new().auth(token).auth_token,
+            Some(token)
+        );
     }
 
     #[test]
     #[cfg(feature = "enterprise")]
     fn sets_base_url() {
-        let builder = GithubClientBuilder::new();
         let base_url = "something.com";
-        assert_eq!(builder.base_url(base_url).base_url, Some(base_url));
+        assert_eq!(
+            GithubClientBuilder::new().base_url(base_url).base_url,
+            Some(base_url)
+        );
     }
 
     #[test]
@@ -135,20 +139,18 @@ mod tests {
     #[cfg(feature = "enterprise")]
     #[should_panic(expected = "CreationError { kind: BaseUrlNotProvided }")]
     fn err_on_no_base_url() {
-        let builder = GithubClientBuilder::new();
-        builder.auth(FAKE_TOKEN).build().unwrap();
+        GithubClientBuilder::new().auth(FAKE_TOKEN).build().unwrap();
     }
 
     #[test]
     fn builds_client() {
-        let builder = GithubClientBuilder::new();
         #[cfg(not(feature = "enterprise"))]
-        let client = builder
+        let client = GithubClientBuilder::new()
             .auth(FAKE_TOKEN)
             .build()
             .expect("Should build client");
         #[cfg(feature = "enterprise")]
-        let client = builder
+        let client = GithubClientBuilder::new()
             .auth(FAKE_TOKEN)
             .base_url("https://something.something.com/api/v3")
             .build()
