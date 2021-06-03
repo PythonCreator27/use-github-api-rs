@@ -33,6 +33,10 @@ pub struct GithubClient<'a> {
     pub(crate) base_url: &'a str,
     pub(crate) reqwest_client: Client,
     #[cfg(feature = "auth")]
+    #[cfg(test)]
+    pub(crate) auth_token: &'a str,
+    #[cfg(feature = "auth")]
+    #[cfg(not(test))]
     auth_token: &'a str,
     pub(crate) default_headers: HeaderMap,
     user_agent: &'a str,

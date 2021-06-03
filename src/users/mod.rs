@@ -1,6 +1,10 @@
 #[cfg(not(test))]
 use crate::url;
-use crate::{check_for_errors, schema::users::contextual_info, GithubClient};
+use crate::{
+    check_for_errors,
+    schema::users::{contextual_info, current},
+    GithubClient,
+};
 use serde_json::from_str;
 use std::error::Error;
 
@@ -119,8 +123,41 @@ impl<'a> Users<'a> {
             }
         }
     }
+
+    #[cfg(any(feature = "auth", doc))]
+    #[cfg_attr(docsrs, doc(cfg(feature = "auth")))]
+    /// Fetches the current authenticated user.
+    pub async fn current(&self) -> Result<current::User, Box<dyn Error>> {
+        #[cfg(test)]
+        let text = crate::mock_response!(&self, "users", "current", &self.client.auth_token);
+        #[cfg(not(test))]
+        let text = {
+            let result = self
+                .client
+                .reqwest_client
+                .get(url!(self, "/user"))
+                .send()
+                .await?;
+            result.text().await?
+        };
+
+        match from_str::<current::User>(&text) {
+            Ok(data) => Ok(data),
+            Err(err) => {
+                if err.is_data() {
+                    let error_data = from_str::<GitHubError>(&text)?;
+                    check_for_errors!(error_data, err);
+                } else {
+                    Err(err.into())
+                }
+            }
+        }
+    }
 }
 
+// NOTE: All of these tests are really just sanity checks. They just read fake responses from the filesystem.
+// These do not hit the API, since rate limits are strict and auth tokens are also required.
+// Technically, these are tests for the schema and not for the functions, but this is the best that can be done.
 #[cfg(test)]
 mod tests {
     #[cfg(feature = "auth")]
@@ -171,5 +208,19 @@ mod tests {
         let users = Users::new(&client);
         let data = users.contextual_info("mojombo", None).await.unwrap();
         assert_eq!(data.contexts[0].message, "Member of @toml-lang");
+    }
+
+    #[tokio::test]
+    #[cfg(feature = "auth")]
+    async fn current_user_works() {
+        let client = GithubClient::new(
+            #[cfg(feature = "enterprise")]
+            "https://something.com/api/v3",
+            FAKE_TOKEN,
+        )
+        .unwrap();
+        let users = Users::new(&client);
+        let data = users.current().await.unwrap();
+        assert_eq!(data.name, Some("Advaiya Lad".to_owned()));
     }
 }

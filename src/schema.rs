@@ -1,4 +1,12 @@
 pub mod users {
+    #[derive(Debug, serde::Deserialize)]
+    pub struct Plan {
+        name: String,
+        space: usize,
+        collaborators: usize,
+        private_repos: usize,
+    }
+
     pub mod list {
         use std::error::Error;
 
@@ -87,15 +95,7 @@ pub mod users {
             pub following: usize,
             pub created_at: DateTime<Utc>,
             pub updated_at: DateTime<Utc>,
-            pub plan: Option<Plan>,
-        }
-
-        #[derive(Debug, serde::Deserialize)]
-        pub struct Plan {
-            name: String,
-            space: usize,
-            collaborators: usize,
-            private_repos: usize,
+            pub plan: Option<super::Plan>,
         }
     }
 
@@ -125,6 +125,53 @@ pub mod users {
                     subject_type,
                 }
             }
+        }
+    }
+
+    pub mod current {
+        use chrono::{DateTime, Utc};
+
+        #[derive(serde::Deserialize, Debug)]
+        pub struct User {
+            pub login: String,
+            pub id: usize,
+            #[cfg(feature = "node_ids")]
+            pub node_id: String,
+            // avatar_url: String,
+            // gravatar_id: String,
+            // url: String,
+            // html_url: String,
+            // followers_url: String,
+            // following_url: String,
+            // gists_url: String,
+            // starred_url: String,
+            // subscriptions_url: String,
+            // organizations_url: String,
+            // repos_url: String,
+            // received_events_url: String,
+            pub r#type: String,
+            pub site_admin: bool,
+            pub name: Option<String>,
+            pub company: Option<String>,
+            pub blog: String,
+            pub location: Option<String>,
+            pub email: Option<String>,
+            pub hireable: Option<bool>,
+            pub bio: Option<String>,
+            pub twitter_username: Option<String>,
+            pub public_repos: usize,
+            pub public_gists: usize,
+            pub followers: usize,
+            pub following: usize,
+            pub created_at: DateTime<Utc>,
+            pub updated_at: DateTime<Utc>,
+            pub private_gists: Option<usize>,
+            pub total_private_repos: Option<usize>,
+            pub owned_private_repos: Option<usize>,
+            pub disk_usage: Option<usize>,
+            pub collaborators: Option<usize>,
+            pub two_factor_authentication: Option<bool>,
+            pub plan: Option<super::Plan>,
         }
     }
 }

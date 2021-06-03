@@ -1,8 +1,5 @@
 #[macro_export]
 macro_rules! mock_response {
-    ($mod:literal, $fn:literal) => {{
-
-    }};
     ($client:expr, $mod:literal, $fn:literal, $cfg:expr) => {{
         use std::fs::read_to_string;
         let cfg = format!("{:#?}", $cfg).replace(": ", "-").replace("\n", "").replace(" ", "").replace(",)", ")").replace(",}", "}").replace("\"", "");
