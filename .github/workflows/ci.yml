@@ -11,15 +11,10 @@ jobs:
         strategy:
             matrix:
                 toolchain: [stable]
-                args:
-                    [
-                        --no-default-features,
-                        --features enterprise,
-                        --features auth,
-                    ]
+                args: [--no-default-features, --all-features, --features auth]
                 include:
                     - toolchain: nightly
-                      args: --features enterprise
+                      args: --all-features
             fail-fast: false
         runs-on: ubuntu-latest
         name: Run CI on ${{ matrix.toolchain }} with args ${{ matrix.args }}
@@ -30,26 +25,36 @@ jobs:
               with:
                   toolchain: ${{ matrix.toolchain }}
                   override: true
-                  components: rustfmt, clippy
             - name: cargo check
               uses: actions-rs/cargo@v1
               with:
                   command: check
                   args: ${{ matrix.args }}
-            - name: clippy
-              uses: actions-rs/clippy-check@v1
-              continue-on-error: true
-              with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  args: ${{ matrix.args }}
-            - name: rustfmt
-              uses: actions-rs/cargo@v1
-              continue-on-error: true
-              with:
-                  command: fmt
-                  args: -- --check
             - name: Run tests
               uses: actions-rs/cargo@v1
               with:
                   command: test
                   args: ${{ matrix.args }}
+
+    clippy-rustfmt:
+        runs-on: ubuntu-latest
+        name: Run rustfmt and clippy
+        needs: ci
+        steps:
+            - uses: actions/checkout@v2
+            - name: Setup toolchain
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: nightly
+                  components: rustfmt, clippy
+                  override: true
+            - name: clippy
+              uses: actions-rs/clippy-check@v1
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  args: --all-features
+            - name: rustfmt
+              uses: actions-rs/cargo@v1
+              with:
+                  command: fmt
+                  args: -- --check
