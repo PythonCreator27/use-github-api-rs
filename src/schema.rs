@@ -121,8 +121,8 @@ pub mod users {
         impl Params {
             pub fn new(subject_type: String, subject_id: usize) -> Self {
                 Self {
-                    subject_id,
                     subject_type,
+                    subject_id,
                 }
             }
         }

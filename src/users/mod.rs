@@ -1,8 +1,11 @@
-#[cfg(not(test))]
+#![allow(unused_imports)]
 use crate::url;
 use crate::{
     check_for_errors,
-    schema::users::{contextual_info, current},
+    schema::{
+        users::{contextual_info, current, list, single},
+        GitHubError,
+    },
     GithubClient,
 };
 use serde_json::from_str;
@@ -16,10 +19,6 @@ pub struct Users<'a> {
     client: &'a GithubClient<'a>,
 }
 
-use crate::schema::{
-    users::{list, single},
-    GitHubError,
-};
 impl<'a> Users<'a> {
     pub(crate) fn new(client: &'a GithubClient<'a>) -> Self {
         Users { client }
