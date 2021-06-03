@@ -59,8 +59,9 @@ To get the auth token, you will need to go to [GitHub settings](https://github.c
         -   [ ] Basic operations
             -   [x] List users
             -   [x] Get a single user - **auth?**
-            -   [ ] Get contextual information (based on the context) on a user - **auth**
-            -   [ ] GET and PATCH the current user - **auth**
+            -   [x] Get contextual information (based on the context) on a user - **auth**
+            -   [x] Get the current user - **auth**
+            -   [ ] Update the current user - **auth**
         -   [ ] User blocks - **auth**
         -   [ ] Emails - **auth**
         -   [ ] Followers - **auth**
