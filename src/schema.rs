@@ -81,7 +81,7 @@ pub mod users {
             // received_events_url: String,
             pub r#type: String,
             pub site_admin: bool,
-            pub name: String,
+            pub name: Option<String>,
             pub company: Option<String>,
             pub blog: String,
             pub location: String,
